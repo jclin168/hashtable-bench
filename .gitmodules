@@ -30,3 +30,7 @@
 [submodule "thirdparty/unordered_dense"]
 	path = thirdparty/unordered_dense
 	url = https://github.com/martinus/unordered_dense.git
+[submodule "thirdparty/sflat_hash_map"]
+	path = thirdparty/sflat_hash_map
+	url = https://github.com/jclin168/sflat_hash_map.git
+	branch = main
