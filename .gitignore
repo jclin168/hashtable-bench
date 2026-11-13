@@ -11,3 +11,6 @@ results/**/chart_js/
 # Python
 __pycache__/
 *.pyc
+
+# Boost headers for boost_unordered_flat_map (see CMakeLists.txt)
+thirdparty/boost/

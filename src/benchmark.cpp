@@ -610,7 +610,8 @@ std::tuple<StatsTuple, HistResultsArray> TestTablePerformance(
     std::uniform_int_distribution<size_t> size_gen;
     using mutable_value_type = typename MutableValue<value_type>::type;
 
-    using key_type = typename Table::key_type;
+    // std::remove_const_t: emhash8::HashMap declares key_type as const KeyT
+    using key_type = std::remove_const_t<typename Table::key_type>;
     using mapped_type = typename Table::mapped_type;
 
     using KeyRNG = typename ValueRandomGen::KeyRNGType;
@@ -1671,7 +1672,8 @@ bool IsTableSame(const Table1 &table1, const Table2 &table2) {
 
 template<class Table, class ValueRandomGen, class value_type>
 int TestBasicCorrect(size_t seed) {
-    using key_type = typename Table::key_type;
+    // std::remove_const_t: emhash8::HashMap declares key_type as const KeyT
+    using key_type = std::remove_const_t<typename Table::key_type>;
     using mapped_type = typename Table::mapped_type;
 
     using KeyRNG = typename ValueRandomGen::KeyRNGType;

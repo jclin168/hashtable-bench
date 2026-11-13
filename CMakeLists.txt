@@ -52,6 +52,17 @@ MESSAGE(STATUS "USE_HUGE_PAGE: ${USE_HUGE_PAGE}")
 
 file(GLOB INC_HASHES "src/hashes/*")
 file(GLOB INC_MAPS "src/maps/*")
+
+# boost::unordered_flat_map is header-only. Extract the boost/ headers of a
+# Boost release (>= 1.81) into thirdparty/boost, or pass -DBOOST_INCLUDE_DIR.
+find_path(BOOST_INCLUDE_DIR boost/unordered/unordered_flat_map.hpp
+        HINTS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/boost)
+if (BOOST_INCLUDE_DIR)
+    MESSAGE(STATUS "BOOST_INCLUDE_DIR: ${BOOST_INCLUDE_DIR}")
+else()
+    MESSAGE(STATUS "boost/unordered/unordered_flat_map.hpp not found, skip boost_unordered_flat_map")
+    list(FILTER INC_MAPS EXCLUDE REGEX "/boost_unordered_flat_map$")
+endif()
 file(GLOB INC_UTILS "src/utils/")
 file(GLOB INC_SEED_HASHES "src/seed-hashes/*")
 file(GLOB INC_SEED_MAPS "src/seed-maps/*")
