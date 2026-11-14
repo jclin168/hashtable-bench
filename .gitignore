@@ -14,3 +14,6 @@ __pycache__/
 
 # Boost headers for boost_unordered_flat_map (see CMakeLists.txt)
 thirdparty/boost/
+
+# compiled tools/clk.cpp
+results/**/clk
