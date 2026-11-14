@@ -1,0 +1,9 @@
+2026-11-14T09:51:26-08:00 clock before time: 1.362 1.338 1.349 1.362 1.351 
+2026-11-14T09:51:26-08:00 start time sflat_flat_hash_map
+2026-11-14T10:58:54-08:00 done time sflat_flat_hash_map exit 0
+2026-11-14T10:58:55-08:00 clock after time: 1.346 1.362 1.366 1.356 1.363 
+2026-11-14T10:58:56-08:00 clock before mem: 1.349 1.355 1.358 1.356 1.354 
+2026-11-14T10:58:56-08:00 start mem sflat_flat_hash_map
+2026-11-14T12:25:57-08:00 done mem sflat_flat_hash_map exit 0
+2026-11-14T12:25:58-08:00 clock after mem: 1.339 1.364 1.344 1.347 1.358 
+2026-11-14T12:25:58-08:00 ALL DONE
