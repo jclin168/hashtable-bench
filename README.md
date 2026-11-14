@@ -355,7 +355,7 @@ each map (logged in `logs/time_progress.log`); it stayed within 1.31 to 1.37
 The cores are not isolated, so single data points can still be noisy. Compare
 the trend over several sizes rather than one point.
 
-Versions: `sflat::flat_hash_map` jclin168/sflat_hash_map main (aaded6f),
+Versions: `sflat::flat_hash_map` jclin168/sflat_hash_map `perf-slow-spots` (b4380ed, on top of main aaded6f),
 `absl::flat_hash_map` 20260817.0, `ankerl::unordered_dense_map` v5.3.3,
 `boost::unordered_flat_map` Boost 1.92.0, `emhash::hash_map8` master (76490cd),
 `std::unordered_map` libstdc++ 15.2.
@@ -423,17 +423,18 @@ lookups wait for DRAM, and the cost per lookup rises by several times between
 
 `boost::unordered_flat_map`, `ankerl::unordered_dense_map` and
 `sflat::flat_hash_map` are within a few percent of each other on hits at 1,024
-elements (6.6, 6.7 and 6.8 ns), and boost is the fastest at most larger sizes
-with the default load factor: 15.9 ns against 17.8 ns for sflat and 22.3 ns for
-ankerl at 10^5 elements, and 42.5, 44.5 and 52.5 ns at 10^7. With
-`max_load_factor(0.9)` sflat is the fastest on hits from 10^5 elements on (41.5
-ns against 47.1 ns for boost at 10^7). On the uniform dataset `emhash::hash_map8`
+elements (6.6, 6.7 and 6.9 ns). With the default load factor boost is the
+fastest at 10^5 elements (15.9 ns against 18.3 ns for sflat and 22.3 ns for
+ankerl); from about 10^6 elements sflat is level with it or slightly ahead (28.7
+ns against 32.9 ns at 1.2 million, 41.0 ns against 42.5 ns at 10^7, ankerl 52.5
+ns). With `max_load_factor(0.9)` sflat is the fastest on hits from 10^5 elements
+on (41.6 ns against 47.1 ns for boost at 10^7). On the uniform dataset `emhash::hash_map8`
 is the fastest on hits up to a few thousand elements, and at 10^5 to 10^7
 elements absl, boost and sflat are within 10% of each other.
 
-For keys that are not in the map, boost is the fastest at most sizes, by 15% to
-45% over sflat (26.1 ns against 30.0 ns at 10^7, 8.4 ns against 12.2 ns at
-10^5), and ankerl is slower than both. `std::unordered_map` is 3 to 6 times
+For keys that are not in the map, boost is the fastest at most sizes, by 5% to
+45% over sflat (4.8 ns against 7.0 ns at 1,024 elements, 8.4 ns against 10.0 ns
+at 10^5, 26.1 ns against 29.8 ns at 10^7), and ankerl is slower than both. `std::unordered_map` is 3 to 6 times
 slower than the fastest flat map on every lookup past the L2 cache, because each
 lookup follows a pointer to a node.
 
@@ -443,14 +444,15 @@ lookup follows a pointer to a node.
 
 <center>Figure 5: Insert keys into the map after reserve</center>
 
-Up to about 10^5 elements boost is the fastest (9.0 ns against 9.7 ns for sflat
-at 1,024 elements, 14.6 ns against 16.8 ns at 10^5). From about 10^6 elements on,
+Up to about 10^5 elements boost is the fastest (9.0 ns against 10.9 ns for sflat
+at 1,024 elements, 14.6 ns against 16.6 ns at 10^5). From about 10^6 elements on,
 sflat inserts the fastest on the integer datasets (except `mask_high_bits`,
 where emhash8 is faster at 10^7), and the gap to the others grows with the size:
-at 10^7 elements it takes 44.6 ns per insert, against 130 ns for boost, 142 ns
+at 10^7 elements it takes 45.3 ns per insert, against 130 ns for boost, 142 ns
 for ankerl and 236 ns for `std::unordered_map`. Without a prior `reserve`, the
-order is the same at large sizes (64 ns against 136 ns for boost at 10^7), and
-ankerl and boost are the fastest at small sizes.
+order is the same at large sizes (62.5 ns against 136 ns for boost at 10^7), and
+boost and ankerl are the fastest up to about 10^5 elements (27.8 ns for boost
+against 31.4 ns for sflat at 10^5).
 
 #### Erase and insert
 
@@ -463,14 +465,14 @@ often erase recent keys more often, so this test depends on the data more than
 the others.
 
 `boost::unordered_flat_map` is the fastest up to about 10^6 elements, by a wide
-margin on small tables (10.2 ns against 48.0 ns for sflat at 1,024 elements,
-68.5 ns against 87.3 ns at 10^5). sflat works at a 0.875 load factor and leaves a
+margin on small tables (10.2 ns against 43.7 ns for sflat at 1,024 elements,
+68.5 ns against 81.6 ns at 10^5). sflat works at a 0.875 load factor and leaves a
 tombstone when it erases from a full group, so it has to rebuild the table in
 place now and then. At about 10^6 elements the two are level (131 ns for boost,
-135 ns for sflat), and at 10^7 sflat is slightly ahead on integer keys (170 ns
-against 185 ns for boost on this dataset, 165 ns against 188 ns on the uniform
+133 ns for sflat), and at 10^7 sflat is slightly ahead on integer keys (163 ns
+against 185 ns for boost on this dataset, 162 ns against 188 ns on the uniform
 dataset, where absl takes 167 ns). On string keys sflat is slower than the
-fastest map in every size band, by 1.4 to 2 times on average (see below).
+fastest map in most size bands, by 1.4 to 1.6 times on average (see below).
 
 #### Iterate
 
@@ -525,20 +527,23 @@ elements on, and on inserts from 10^5 on; boost is the fastest on misses
 With string keys, hashing and comparing the string take a large share of each
 operation, and all maps use the same `std::hash<std::string>`. The flat maps
 are therefore close to each other on hits: over the six string datasets,
-sflat is on average 1% to 15% slower than the fastest flat map on hits (15% below
-5,000 elements, 1% to 3% above 300,000), and at 10^6 and 10^7 elements it is
-the fastest on hits on most of the datasets (for example 112 ns at 10^7 with
-fixed 12-byte keys, and 343 ns with fixed 64-byte keys, against 346 ns for absl and 365 ns for boost).
-On misses sflat is 9% to 34% slower than the fastest map.
+sflat is on average 3% to 13% slower than the fastest flat map on hits (14% below
+5,000 elements, 5% from 5,000 to 300,000, 1% above 300,000), and at 10^7 elements
+it is within 2% of the fastest map on hits on every dataset (112 ns with fixed
+12-byte keys against 113 ns for boost, 352 ns with fixed 64-byte keys against
+346 ns for absl), and the fastest on one of them.
+On misses sflat is 13% to 34% slower than the fastest map on average.
 
-Inserts and erases differ more. Over the six datasets sflat is on average 1.3
-to 1.65 times slower than the fastest flat map on inserts with `reserve`, 1.6 to
-2 times on inserts without it, and 1.4 to 2 times on erase and insert. boost is
-the fastest on most small and mid sizes, and ankerl on large ones: at 10^7
-elements with fixed 12-byte keys an insert takes 153 ns in sflat and 115 ns in
-ankerl, and an erase and insert takes 834 ns in sflat and 432 ns in boost with
-fixed 64-byte keys. One possible reason is that an in-place rebuild of sflat hashes
-every string again; this was not tested here.
+Inserts and erases differ more. Over the six datasets sflat is on average 1.04
+to 1.24 times slower than the fastest flat map on inserts with `reserve` (it is
+the fastest at 10^7 elements with fixed 12-byte keys: 106 ns against 115 ns for
+ankerl), 1.25 to 1.7 times on inserts without it, and 1.4 to 1.6 times on erase
+and insert. boost is the fastest on most small and mid sizes, and absl or boost
+on large ones for erase and insert: at 10^7 elements with fixed 64-byte keys an
+erase and insert takes 684 ns in sflat and 432 ns in boost. The in-place rebuild
+of sflat hashes every string again, which is a large part of its erase and
+insert cost on strings; it now skips the groups that no displaced key can
+enter, which took 5% to 20% off string erase and insert.
 
 The lengths of the variable-length strings are roughly uniform between about 1
 and the maximum length (there are fewer distinct short strings, so longer
@@ -579,9 +584,11 @@ misses at most sizes.
 - For large tables of integer keys, `sflat::flat_hash_map` inserts 2 to 3 times
 faster than boost and ankerl, is level with boost on lookup hits, and uses the least
 memory: 19.7 bytes per element for 16-byte elements, against 25 to 35 bytes for
-the other open-addressing maps. Its lookup misses are 10% to 45% behind boost.
-- With string keys sflat is close to the best on lookup hits but slower on
-inserts and erases than boost and ankerl, by 1.3 to 2 times on average.
+the other open-addressing maps. Its lookup misses are 5% to 45% behind boost.
+- With string keys sflat is close to the best on lookup hits and on inserts with
+`reserve` (4% to 24% behind on average), but slower on inserts without `reserve`
+(1.25 to 1.7 times) and on erase and insert (1.4 to 1.6 times) than boost and
+ankerl.
 - If iteration speed matters most, the dense-array maps
 (`ankerl::unordered_dense_map`, `emhash::hash_map8`) iterate about 4 to 10 times
 faster than the others, and ankerl uses the least memory for large elements.
