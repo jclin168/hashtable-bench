@@ -1,0 +1,39 @@
+2026-11-14T08:10:05-0800 clock before sflat_flat_hash_map: 2.351 3.480 3.490 3.485 3.488 
+2026-11-14T08:10:05-0800 start time sflat_flat_hash_map
+2026-11-14T08:54:35-0800 done time sflat_flat_hash_map exit 0
+2026-11-14T08:54:35-0800 clock after sflat_flat_hash_map: 3.421 3.473 3.497 3.500 3.500 
+2026-11-14T08:54:36-0800 clock before boost_unordered_flat_map: 3.480 3.500 3.488 3.486 3.494 
+2026-11-14T08:54:36-0800 start time boost_unordered_flat_map
+2026-11-14T09:12:27-0800 done time boost_unordered_flat_map exit 0
+2026-11-14T09:12:27-0800 clock after boost_unordered_flat_map: 3.496 3.497 3.487 3.492 3.490 
+2026-11-14T09:12:27-0800 clock before ankerl_unordered_map: 3.454 3.493 3.498 3.498 3.497 
+2026-11-14T09:12:27-0800 start time ankerl_unordered_map
+2026-11-14T09:31:36-0800 done time ankerl_unordered_map exit 0
+2026-11-14T09:31:36-0800 clock after ankerl_unordered_map: 3.497 3.498 3.492 3.498 3.493 
+2026-11-14T09:31:36-0800 clock before absl_flat_hash_map: 3.499 3.499 3.497 3.498 3.488 
+2026-11-14T09:31:36-0800 start time absl_flat_hash_map
+2026-11-14T10:06:48-0800 done time absl_flat_hash_map exit 0
+2026-11-14T10:06:49-0800 clock after absl_flat_hash_map: 3.490 3.499 3.494 3.491 3.496 
+2026-11-14T10:06:49-0800 clock before emhash_map8: 3.476 3.494 3.493 3.494 3.498 
+2026-11-14T10:06:49-0800 start time emhash_map8
+2026-11-14T10:46:40-0800 done time emhash_map8 exit 0
+2026-11-14T10:46:40-0800 clock after emhash_map8: 3.494 3.498 3.493 3.499 3.497 
+2026-11-14T10:46:40-0800 clock before std_unordered_map: 3.491 3.492 3.497 3.495 3.497 
+2026-11-14T10:46:40-0800 start time std_unordered_map
+2026-11-14T11:22:54-0800 done time std_unordered_map exit 0
+2026-11-14T11:22:54-0800 clock after std_unordered_map: 3.489 3.498 3.496 3.494 3.497 
+2026-11-14T11:22:54-0800 start mem sflat_flat_hash_map
+2026-11-14T11:46:47-0800 done mem sflat_flat_hash_map exit 0
+2026-11-14T11:46:47-0800 start mem boost_unordered_flat_map
+2026-11-14T12:09:04-0800 done mem boost_unordered_flat_map exit 0
+2026-11-14T12:09:04-0800 start mem ankerl_unordered_map
+2026-11-14T12:32:47-0800 done mem ankerl_unordered_map exit 0
+2026-11-14T12:32:47-0800 start mem absl_flat_hash_map
+2026-11-14T13:21:12-0800 done mem absl_flat_hash_map exit 0
+2026-11-14T13:21:12-0800 start mem emhash_map8
+2026-11-14T14:06:56-0800 done mem emhash_map8 exit 0
+2026-11-14T14:06:56-0800 start mem std_unordered_map
+2026-11-14T14:53:38-0800 done mem std_unordered_map exit 0
+2026-11-14T14:53:38-0800 ALL DONE
+2026-11-14T15:07:05-0800 rerun start sflat: 2.692 3.495 3.491 3.500 3.498 
+2026-11-14T15:26:41-0800 rerun done sflat exit 0: 3.490 3.497 3.497 3.496 3.493 
