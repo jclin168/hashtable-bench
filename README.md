@@ -10,6 +10,9 @@ additional hardware (Apple M1 Max and Intel Xeon E-2388G / Rocket Lake) — are
 published on the blog:
 [Hash Table Benchmark](https://renzibei.com/en/hashtable-bench/).**
 
+🍎 **Apple silicon (M2, macOS) results of the same six maps are in
+[README_MAC.md](./README_MAC.md).**
+
 ## Before viewing the results
 
 If one is familiar enough with the world of hash tables, he/she will know that
